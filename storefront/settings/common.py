@@ -174,8 +174,8 @@ ADMINS = [
     ('Mosh', 'admin@moshbuy.com')
 ]
 
-
-CELERY_BROKER_URL = 'redis://red-cov11qa1hbls73e62ff0:6379'
+REDIS_URL = os.environ['REDIS_URL']
+CELERY_BROKER_URL = REDIS_URL
 CELERY_BEAT_SCHEDULE = {
     'notify_customers': {
         'task': 'playground.tasks.notify_customers',
@@ -187,7 +187,7 @@ CELERY_BEAT_SCHEDULE = {
 CACHES = {
     'default': {
         'BACKEND': 'django_redis.cache.RedisCache',
-        'LOCATION': 'redis://127.0.0.1:6379/2',
+        'LOCATION': REDIS_URL,
         'TIMEOUT': 10 * 60,
         'OPTIONS': {
             'CLIENT_CLASS': 'django_redis.client.DefaultClient',
