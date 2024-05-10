@@ -221,3 +221,5 @@ LOGGING = {
         }
     }
 }
+
+ALLOWED_HOSTS = ['localhost', 'storefront3-wsl2.onrender.com']
