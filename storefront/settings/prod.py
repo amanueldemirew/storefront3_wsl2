@@ -11,4 +11,4 @@ DATABASES = {
     'default': db_from_env
 }
 
-ALLOWED_HOSTS = ['127.0.0.1','storefront3-wsl2.onrender.com']
+ALLOWED_HOSTS = ['storefront3-wsl2.onrender.com']
