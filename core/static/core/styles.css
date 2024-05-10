@@ -1,8 +1,8 @@
-body { 
+body {
   margin: 0;
 }
 
-.home-page { 
+.home-page {
   display: flex;
   justify-content: center;
   align-items: center;
@@ -19,4 +19,37 @@ body {
   object-fit: cover;
   width: 100px;
   height: 100px;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  font-family: Arial, sans-serif;
+  background-image: url("static/core/background.avif");
+  background-size: cover;
+  background-position: center;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.container {
+  text-align: center;
+}
+
+.cool-button {
+  padding: 15px 30px;
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  font-size: 16px;
+  cursor: pointer;
+  text-decoration: none;
+  transition: background-color 0.3s ease;
+}
+
+.cool-button:hover {
+  background-color: #45a049;
 }
