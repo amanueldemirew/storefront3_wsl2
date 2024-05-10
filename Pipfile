@@ -21,8 +21,6 @@ flower = "*"
 django-redis = "*"
 whitenoise = "*"
 gunicorn = "*"
-
-[dev-packages]
 autopep8 = "*"
 pytest = "*"
 pytest-django = "*"
@@ -30,6 +28,8 @@ pytest-watch = "*"
 model-bakery = "*"
 locust = "*"
 django-silk = "*"
+psycopg2-binary = "*"
+dj-database-url = "*"
 
 [requires]
-python_version = "3.9"
+python_version = "3.12"
