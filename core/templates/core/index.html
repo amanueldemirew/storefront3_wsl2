@@ -5,14 +5,18 @@
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Document</title>
+    <title>semi-digital Market</title>
     <link rel="stylesheet" href="{% static 'core/styles.css' %}" />
   </head>
   <body>
-    <div class="container">
-      <h1>Welcome to our Digital Supermarket!</h1>
-      <p>Find everything you need right here.</p>
-      <a href="{% url 'store_api' %}" class="cool-button">Get Started</a>
-  </div>
+    <div class="home-page">
+      <img src="{% static 'core/logo.svg' %}" alt="Logo" class="logo" />
+      <div class="container">
+        <h1>Welcome to our Digital Supermarket!</h1>
+        <p>Find everything you need right here.</p>
+        <a href="/store/" class="cool-button">Get Started</a>
+  
+    </div>
+    </div>
   </body>
 </html>

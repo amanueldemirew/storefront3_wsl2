@@ -222,4 +222,4 @@ LOGGING = {
     }
 }
 
-ALLOWED_HOSTS = ['Amanuel', 'storefront3-wsl2.onrender.com']
+ALLOWED_HOSTS = ['127.0.0.1', 'storefront3-wsl2.onrender.com']
