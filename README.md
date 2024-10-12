@@ -1,10 +1,6 @@
-Here's a README file for your e-commerce backend project using Django and Django REST Framework:
-
----
-
 # E-commerce Backend with Django
 
-This project is an e-commerce backend built with Django and Django REST Framework (DRF). It includes unit tests, performance tests, and is set up for production-grade deployment using Redis.
+This project is an e-commerce backend built with Django and Django REST Framework (DRF). It includes unit tests, performance tests, and is set up for production-grade deployment using Redis and Celery.
 
 ## Features
 
@@ -14,6 +10,7 @@ This project is an e-commerce backend built with Django and Django REST Framewor
 - **Customer Management**: Manage customer information.
 - **Order Management**: Handle order creation and tracking.
 - **Unit and Performance Testing**: Comprehensive tests to ensure code quality and performance.
+- **Background Tasks**: Asynchronous task processing using Celery.
 
 ## Installation
 
@@ -23,6 +20,7 @@ This project is an e-commerce backend built with Django and Django REST Framewor
 - Django 3.2+
 - Django REST Framework
 - Redis
+- Celery
 - Docker (for deployment)
 
 ### Setup
@@ -60,6 +58,79 @@ This project is an e-commerce backend built with Django and Django REST Framewor
     python manage.py createsuperuser
     ```
 
+## Models System
+
+### Product Model
+
+```python
+from django.db import models
+
+class Product(models.Model):
+    name = models.CharField(max_length=255)
+    description = models.TextField()
+    price = models.DecimalField(max_digits=10, decimal_places=2)
+    inventory = models.IntegerField()
+    last_update = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return self.name
+```
+
+### Collection Model
+
+```python
+class Collection(models.Model):
+    title = models.CharField(max_length=255)
+    featured_product = models.ForeignKey(Product, on_delete=models.SET_NULL, null=True, related_name='+')
+
+    def __str__(self):
+        return self.title
+```
+
+### Cart Model
+
+```python
+class Cart(models.Model):
+    created_at = models.DateTimeField(auto_now_add=True)
+
+class CartItem(models.Model):
+    cart = models.ForeignKey(Cart, on_delete=models.CASCADE)
+    product = models.ForeignKey(Product, on_delete=models.CASCADE)
+    quantity = models.PositiveIntegerField()
+
+    class Meta:
+        unique_together = [['cart', 'product']]
+```
+
+### Customer Model
+
+```python
+from django.contrib.auth.models import User
+
+class Customer(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    phone = models.CharField(max_length=255)
+    birth_date = models.DateField(null=True)
+
+    def __str__(self):
+        return self.user.username
+```
+
+### Order Model
+
+```python
+class Order(models.Model):
+    customer = models.ForeignKey(Customer, on_delete=models.CASCADE)
+    placed_at = models.DateTimeField(auto_now_add=True)
+    payment_status = models.CharField(max_length=20, choices=[('PENDING', 'Pending'), ('COMPLETED', 'Completed'), ('FAILED', 'Failed')])
+
+class OrderItem(models.Model):
+    order = models.ForeignKey(Order, on_delete=models.CASCADE)
+    product = models.ForeignKey(Product, on_delete=models.PROTECT)
+    quantity = models.PositiveIntegerField()
+    unit_price = models.DecimalField(max_digits=10, decimal_places=2)
+```
+
 ## API Endpoints
 
 The API uses DRF's router system for endpoint management. Below are the main endpoints:
@@ -87,7 +158,7 @@ carts_router.register('items', views.CartItemViewSet, basename='cart-items')
 
 ### Unit Tests
 
-Run unit tests with:
+Unit tests are essential for ensuring the correctness of your code. Run unit tests with:
 ```bash
 python manage.py test
 ```
@@ -99,6 +170,52 @@ Use a tool like Locust or JMeter for performance testing. Example with Locust:
 locust -f locustfile.py
 ```
 
+## Background Tasks with Celery
+
+Celery is used for handling asynchronous tasks such as sending emails, processing orders, etc.
+
+### Setup Celery
+
+1. **Install Celery**:
+    ```bash
+    pip install celery
+    ```
+
+2. **Configure Celery in your Django project**:
+    ```python
+    # settings.py
+    CELERY_BROKER_URL = 'redis://localhost:6379/0'
+    CELERY_RESULT_BACKEND = 'redis://localhost:6379/0'
+    ```
+
+3. **Create a `celery.py` file in your project directory**:
+    ```python
+    from __future__ import absolute_import, unicode_literals
+    import os
+    from celery import Celery
+
+    os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'your_project.settings')
+
+    app = Celery('your_project')
+    app.config_from_object('django.conf:settings', namespace='CELERY')
+    app.autodiscover_tasks()
+    ```
+
+4. **Define tasks in your Django apps**:
+    ```python
+    # tasks.py
+    from celery import shared_task
+
+    @shared_task
+    def example_task():
+        print("Task executed")
+    ```
+
+5. **Run Celery worker**:
+    ```bash
+    celery -A your_project worker --loglevel=info
+    ```
+
 ## Deployment
 
 ### Settings Configuration
@@ -109,40 +226,14 @@ The project uses separate settings files for different environments: `common.py`
 
 Ensure Redis is installed and running. Update your settings to use Redis for caching and session management.
 
-### Docker Deployment
-
-1. **Build the Docker image**:
-    ```bash
-    docker build -t ecommerce-backend .
-    ```
-
-2. **Run the Docker container**:
-    ```bash
-    docker run -d -p 8000:8000 ecommerce-backend
-    ```
-
 ### Vercel Deployment
 
 Deploy the project to Vercel using the following URL: [storefront3-wsl2.vercel.app](https://storefront3-wsl2.vercel.app)
 
-## Contributing
+### Environment Variables
 
-Contributions are welcome! Please fork the repository and submit pull requests for any enhancements or bug fixes.
+Ensure the `DJANGO_SETTINGS_MODULE` environment variable is set during deployment. For example:
+```bash
+export DJANGO_SETTINGS_MODULE=your_project.settings.prod
+```
 
-## License
-
-This project is licensed under the MIT License. See the LICENSE file for more details.
-
----
-
-Feel free to customize this README file further to fit your project's specific needs!
-
-Source: Conversation with Copilot, 10/12/2024
-(1) GitHub - ShubhamNagure/drf-ecommerce-platform: An advanced e-commerce .... https://github.com/ShubhamNagure/drf-ecommerce-platform.
-(2) ntubrian/ecommerce-django-template - GitHub. https://github.com/ntubrian/ecommerce-django-template.
-(3) GitHub - melbinkoshy/django-drf-ecommerce: A basic e-commerce backend .... https://github.com/melbinkoshy/django-drf-ecommerce.
-(4) undefined. https://github.com/ShubhamNagure/drf-ecommerce-platform.git.
-(5) undefined. http://127.0.0.1:8000/api/.
-(6) undefined. http://127.0.0.1:8000/admin/.
-(7) github.com. https://github.com/rockstarakhil/depotodjango/tree/edb3f105f2ad568d5686349635ecf11c9a66b167/store%2Furls.py.
-(8) github.com. https://github.com/jackson5cc/cocker/tree/1969d837e6ea53abfe8c511bccf28d177405003e/store%2Furls.py.
