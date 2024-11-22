@@ -34,6 +34,7 @@ INSTALLED_APPS = [
     'django_filters',
     'corsheaders',
     'rest_framework',
+    'django_extensions',
     'djoser',
     'silk',
     'playground',
@@ -174,7 +175,7 @@ ADMINS = [
     ('Mosh', 'admin@moshbuy.com')
 ]
 
-REDIS_URL = os.environ['REDIS_URL']
+REDIS_URL = os.environ.get('REDIS_URL', 'redis://localhost:6379')
 CELERY_BROKER_URL = REDIS_URL
 CELERY_BEAT_SCHEDULE = {
     'notify_customers': {
