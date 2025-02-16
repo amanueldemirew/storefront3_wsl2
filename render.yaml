@@ -1,0 +1,39 @@
+services:
+  - name: web
+    env: python
+    plan: hobby
+    buildCommand: pipenv install && pipenv run python manage.py migrate && pipenv run python manage.py collectstatic --noinput
+    startCommand: pipenv run gunicorn storefront.wsgi --bind 0.0.0.0:$PORT
+    healthCheckPath: /healthcheck
+    envVars:
+      - key: SECRET_KEY
+        generateValue: true
+      - key: DATABASE_URL
+        internal: true
+      - key: REDIS_URL
+        internal: true
+
+databases:
+  - name: postgresql
+    plan: hobby-basic
+    envVars:
+      - key: DATABASE_URL
+
+addons:
+  - name: redis
+    plan: hobby-dev
+    envVars:
+      - key: REDIS_URL
+
+commands:
+  - name: Run Locust
+    command: pipenv run locust -f locustfile.py
+
+  - name: Run Celery Worker
+    command: pipenv run celery -A storefront worker -l info
+
+  - name: Run Celery Beat
+    command: pipenv run celery -A storefront beat -l info
+
+  - name: Run Celery Flower
+    command: pipenv run celery -A storefront flower -l info

@@ -30,6 +30,10 @@ locust = "*"
 django-silk = "*"
 psycopg2-binary = "*"
 dj-database-url = "*"
+django-extensions = "*"
+pyparsing = "*"
+pydot = "*"
+django-jazzmin = "*"
 
 [requires]
 python_version = "3.12"
